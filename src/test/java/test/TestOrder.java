@@ -7,22 +7,19 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static org.hamcrest.CoreMatchers.is;
-public class testOrder {
-    WebDriver driver;
+public class TestOrder {
     private static final String PAGE_URL = "https://qa-scooter.praktikum-services.ru/";
-
-   //локатор кнопки принятия куков
+    //локатор кнопки принятия куков
     private static final By COOKIES_ACCEPT_BUTTON = By.id("rcc-confirm-button");
-
     //Локатор для хедер
     private static final By HEADER = By.className("Header_Header__214zg");
+    private WebDriver driver;
+
     @Before //Запускае страницу в браузере, и принимаем куки
-    public void setup(){
+    public void setup() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
         driver = new ChromeDriver(); //включаем хром
@@ -43,7 +40,7 @@ public class testOrder {
                 "Зеленоград",
                 "89162197784",
                 "Сокол");
-        page.enterOrderRentDataSevenDaysAndBlack("12.12.2012", "net");
+        page.enterOrderRentData("12.12.2012", "net", "grey", "сутки");
         page.confirmOrderSend();
         Assert.assertTrue(page.isOrderHasBeenPlaced());
     }
@@ -57,13 +54,13 @@ public class testOrder {
                 "Москва, Цветной больвар, д. 5 Корп. 4 квартира 45",
                 "+13210987654",
                 "Цветной бульвар");
-        page.enterOrderRentDataOneDayAndGrey("31.12.2032", "Нужна запасная батарея");
+        page.enterOrderRentData("31.12.2032", "Нужна запасная батарея", "black", "семеро суток");
         page.confirmOrderSend();
         Assert.assertTrue(page.isOrderHasBeenPlaced());
     }
 
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         driver.quit();
     }
 }

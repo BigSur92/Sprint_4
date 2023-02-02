@@ -1,9 +1,8 @@
 package test;
+
 import org.example.FAQ;
-import org.example.OrderPage;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,40 +11,28 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.hamcrest.CoreMatchers.is;
-@RunWith(Parameterized.class)
-public class testQuestions {
-    WebDriver driver;
-    private static final String PAGE_URL = "https://qa-scooter.praktikum-services.ru/";
 
+@RunWith(Parameterized.class)
+public class TestQuestions {
+    private static final String PAGE_URL = "https://qa-scooter.praktikum-services.ru/";
     private static final By COOKIES_ACCEPT_BUTTON = By.id("rcc-confirm-button");
     //Локатор для хедер
     private static final By HEADER = By.className("Header_Header__214zg");
-    @Before //Запускае страницу в браузере, и принимаем куки
-    public void setup() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        driver = new ChromeDriver(); //включаем хром
-        //driver = new FirefoxDriver(); //включаем мозилу
-        driver.get(PAGE_URL);
-        WebDriverWait wait = new WebDriverWait(driver, 3);
-        wait.until(ExpectedConditions.presenceOfElementLocated(HEADER));
-        driver.findElement(COOKIES_ACCEPT_BUTTON).click();
-    }
     //обьявлем переменные для параметров
     private final int number;
     private final String Answer;
+    private WebDriver driver;
 
-    public testQuestions(int number, String Answer){
+    public TestQuestions(int number, String Answer) {
         this.number = number;
         this.Answer = Answer;
     }
 
-    @Parameterized.Parameters //параметаризируем данные вопросы/ответы
+    @Parameterized.Parameters(name = "Тестовые данные: {0} {1}") //параметаризируем данные вопросы/ответы
     public static Object[][] answers() {
         return new Object[][]{
                 {0, "Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
@@ -60,18 +47,30 @@ public class testQuestions {
         };
     }
 
+    @Before //Запускае страницу в браузере, и принимаем куки
+    public void setup() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
+        driver = new ChromeDriver(); //включаем хром
+        //driver = new FirefoxDriver(); //включаем мозилу
+        driver.get(PAGE_URL);
+        WebDriverWait wait = new WebDriverWait(driver, 3);
+        wait.until(ExpectedConditions.presenceOfElementLocated(HEADER));
+        driver.findElement(COOKIES_ACCEPT_BUTTON).click();
+    }
+
     @Test //тест проверки текста ответов на вопросы
     public void checkAllQuestions() {
         FAQ page = new FAQ(driver);
         page.scrollToQuestions();
-        driver.findElement(By.id("accordion__heading-" + this.number )).click();
-        String Answer_Text =  driver.findElement(By.id("accordion__panel-" + this.number )).getText();
+        driver.findElement(By.id("accordion__heading-" + this.number)).click();
+        String Answer_Text = driver.findElement(By.id("accordion__panel-" + this.number)).getText();
         MatcherAssert.assertThat(Answer_Text, is(Answer));
 
     }
 
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         driver.quit();
     }
 }
